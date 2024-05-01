@@ -15,7 +15,7 @@ module purge
 module load libs/nvidia-cuda/12.3.0/bin
 
 # Load Python module
-module load apps/python3/3.10.5/gcc-9.3.0
+module load apps/python3/3.11.8/gcc-13.2.0
 
 # Create and activate central virtual environment
 python3 -m venv central
@@ -25,7 +25,7 @@ source central/bin/activate
 pip3 install -r requirements.txt
 
 # Run the preprocessing task
-cd ./output-token-len-predictions
+cd ~/LLM-serving-with-proxy-models/output-token-len-predictions
 python preprocess_dataset.py
 
 # Run the training task
