@@ -43,6 +43,7 @@ class Simulator:
         :param job_list:Job
         :return throughput:double
         """
+        # TODO weired way of computing the throughput
         # Check the real-time throughput when finishing 5%, 10%, 25%, 50%, 75%, 90%, 100% of the jobs
         job_finish_times = [job.get_completion_time() for job in job_list]
         job_finish_times = sorted(job_finish_times)

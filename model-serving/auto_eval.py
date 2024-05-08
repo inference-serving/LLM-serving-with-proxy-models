@@ -360,6 +360,7 @@ def main():
         avg_arrival_rate = 1
         num_jobs = 20
         df = pd.DataFrame(columns=['algorithm', 'waiting_time', 'jct', 'throughput', 'model'])
+        # TODO this seems to be only the predictor models, I cannot find the Models in Table 1
         for model in ['vicuna-33b', 'vicuna-13b', 'vicuna-7b', 'palm-2', 'gpt-4', 'gpt-3.5-turbo', 'gpt4all-13b-snoozy',
                       'llama-2-13b-chat', 'llama-2-7b-chat', 'llama-13b', 'claude-instant-1', 'claude-1', 'claude-2',
                       'alpaca-13b', 'fastchat-t5-3b']:

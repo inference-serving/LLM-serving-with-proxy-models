@@ -150,7 +150,7 @@ def create_jobs_from_llm_data(num_jobs, arrival_rate=1, std=1, coefficient_of_va
     """
     if distribution == 'poisson':
         request_list = np.random.poisson(arrival_rate, int(num_jobs / arrival_rate))
-        while sum(request_list) < num_jobs:
+        while sum(request_list) < num_jobs: # TODO what is this?
             request_list = np.append(request_list, np.random.poisson(arrival_rate, int(num_jobs / arrival_rate)))
         # print('Request list:', request_list)
         arrival_times = generate_arrival_list(request_list, num_jobs)
@@ -163,6 +163,7 @@ def create_jobs_from_llm_data(num_jobs, arrival_rate=1, std=1, coefficient_of_va
         intervals = np.random.gamma(shape, scale, num_jobs)
         arrival_times = np.cumsum(np.sort(intervals))
     else:
+        # TODO this seems to be trace-driven in the paper
         print('Distributions should be chosen from [poisson, uniform, gamma]!')
         exit(0)
     # print("Generated arrival times:", arrival_times)
@@ -206,11 +207,14 @@ def create_jobs_from_llm_data(num_jobs, arrival_rate=1, std=1, coefficient_of_va
             job_list = []
             for job_id in range(num_jobs):
                 # get the actual execution time from the LLM data
+                # TODO from here I assume that the prediction overhead is not considered AUTHOR
                 exec_time = round(const_latency + samples_df_rows.iloc[job_id][LABEL_COLUMN_NAME] * per_token_latency, 2)
                 arrival_time = arrival_times[job_id]
                 # get the estimated execution time from the LLM data
                 prediction_column = classifier + PREDICTION_POSTFIX
                 if prediction_column in samples_df_rows.columns:
+                    # TODO mention in the question from the author, how sometimes this is class sometimes the real number of tokens!!!
+                    # Seems to be completely wrong and out of order unless sometimes later they take care of this AUTHOR
                     predicted_exec_time = round(const_latency + samples_df_rows.iloc[job_id][prediction_column] * per_token_latency, 2)
                     # predicted_exec_time = round(
                     #     const_latency + random.randint(0, 4) * per_token_latency, 2)  # a random token length predictor

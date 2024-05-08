@@ -46,7 +46,7 @@ class FCFS:
             # > for the static batching case
             running_batch = []
             if self.completion_time < self.queue[0].get_arrival_time():
-                self.completion_time = self.queue[0].get_arrival_time()
+                self.completion_time = self.queue[0].get_arrival_time() # TODO why completion time is same as arrival time
             while len(self.queue) > 0 and len(running_batch) < MAX_BATCH_SIZE and self.queue[0].get_arrival_time() <= self.completion_time + BATCH_WAIT_TIMEOUT:
                 running_batch.append(self.queue.popleft())
             # get the job_arrival_time and job_duration based on the running_batch
@@ -72,6 +72,7 @@ class FCFS:
             # running.set_status("RUNNING")
             # running.set_waiting_duration(self.completion_time - job_arrival_time)
             # > for the static batching case
+            # TODO seems to be the stage that is consuming the job
             for running in running_batch:
                 running.set_status("RUNNING")
                 running.set_waiting_duration(self.completion_time - running.get_arrival_time())

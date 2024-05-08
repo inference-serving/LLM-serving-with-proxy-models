@@ -36,7 +36,7 @@ def run_exp(num_jobs, distribution, avg_arrival_rate, algorithms, use_llm=True, 
                                                 data_path=data_path,
                                                 per_token_latency=per_token_latency, const_latency=const_latency,
                                                 return_dict=True)
-            job_list = job_dict[classifiers[0]]  # for FCFS and SJF
+            job_list = job_dict[classifiers[0]]  # for FCFS and SJF TODO it seems they are not using other loss and methods results at all AUTHORS
     else:
         job_list = create_jobs(num_jobs, distribution=distribution, arrival_rate=avg_arrival_rate,
                                std=std_arrival_rate, coefficient_of_variance=cv_arrival_rate)
