@@ -144,6 +144,7 @@ def calc_percentile(dataset):
         # plt.ylabel('User Requests')
         # plt.savefig('dist.png')
     else:
+        # TODO what does this case do??
         output_token_lengths = [[] for _ in range(num_models)]
         for sample in dataset:
             output_token_lengths[sample['model']].append(sample['num_tokens'])
@@ -170,6 +171,7 @@ def preprocess_dataset(dataset):
     if FLAG_FIRST_ROUND_ONLY:
         dataset = dataset.map(extract_first_round_prompt, remove_columns=['conversation'])
         print('Num samples before filtering: ', len(dataset))
+        # TODO why keeping them between 1-512, is it becaues of the model input size restrictions?
         if task_type == 0:
             dataset = dataset.filter(lambda example: example["labels"] > 1 and example["labels"] < 512)
         else:
@@ -190,8 +192,8 @@ def preprocess_dataset(dataset):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--all_models', action='store_true', default=False)
-    parser.add_argument('--multi_round', action='store_true', default=False)
-    parser.add_argument('--head_tail', action='store_true', default=False)
+    parser.add_argument('--multi_round', action='store_true', default=False) # TODO meaning?
+    parser.add_argument('--head_tail', action='store_true', default=False) # TODO meaning?
     parser.add_argument('--task_type', type=int, help='0 for regression, 1 for binary cls, 2 for multi-cls', default=2)
     parser.add_argument('--data_size', type=int, help='Size of the dataset to use (in thousands)', default=1000)
     args = parser.parse_args()
@@ -205,14 +207,16 @@ if __name__ == '__main__':
     if task_type == 1:
         multi_cls_thresholds = [141, 503, 1000000]
     else:
-        multi_cls_thresholds = [42, 141, 294, 503, 1000000] if FLAG_FIRST_ROUND_ONLY else [58, 147, 280, 499, 100000]
+        multi_cls_thresholds = [42, 141, 294, 503, 1000000] if FLAG_FIRST_ROUND_ONLY else [58, 147, 280, 499, 100000] # TODO meaning?
     dataset_name = 'lmsys/lmsys-chat-1m'
     model_name = 'bert-base-uncased'
+    # TODO what is special about this tokenizer?
     vicuna_tokenizer = AutoTokenizer.from_pretrained("lmsys/vicuna-13b-v1.3", legacy=False)
-    bert_tokenizer = AutoTokenizer.from_pretrained(model_name)
+    bert_tokenizer = AutoTokenizer.from_pretrained(model_name) # TODO why imported once for the model and once for the dataset?
     bert_tokenizer.deprecation_warnings["Asking-to-pad-a-fast-tokenizer"] = True
     selected_data_size = 1000 * args.data_size
 
+    # TODO why several models?
     model_names = ['vicuna-13b', 'wizardlm-13b', 'palm-2', 'llama-2-13b-chat', 'koala-13b',
                    'claude-instant-1', 'oasst-pythia-12b', 'alpaca-13b', 'mpt-7b-chat',
                     'vicuna-7b', 'dolly-v2-12b', 'mpt-30b-chat', 'fastchat-t5-3b', 'chatglm-6b',
@@ -232,14 +236,14 @@ if __name__ == '__main__':
     dataset_path = 'data/lmsys_' + dataset_path + f'{int(selected_data_size / 1000)}K'
 
     dataset = load_dataset(dataset_name, split='train')
-    dataset = dataset.select(range(selected_data_size))
+    dataset = dataset.select(range(selected_data_size)) # TODO what does this mean?
     if FLAG_VICUNA_DATA_ONLY:
         dataset = dataset.filter(lambda example: example["model"] == 'vicuna-13b')
     dataset = dataset.shuffle(seed=1)
     dataset = preprocess_dataset(dataset)
 
     num_models = len(model_names)
-    percentiles = [[] for _ in range(num_models)]
+    percentiles = [[] for _ in range(num_models)] # TODO why these percentiles are different for multiple models
     if task_type != 0:
         dataset = calc_percentile(dataset)
     dataset.set_format("torch")

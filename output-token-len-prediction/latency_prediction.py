@@ -124,7 +124,7 @@ def generate_dataloaders(dataset, train_batch_size, test_batch_size, tokenizer):
             if n_samples_for_label_i == 0:
                 weights.append(0.0)
             else:
-                weights.append(1.0 / n_samples_for_label_i)
+                weights.append(1.0 / n_samples_for_label_i) # NOTE computed to fix the imbalance in the dataset in the loss function
     return train_dataloader, validation_dataloader, test_dataset, weights
 
 
@@ -224,8 +224,10 @@ def eval_classification(model, dataloader, device):
     model.eval()
     labels = []
     predictions = []
+    num_batch = 0
     for batch in dataloader:
-        with torch.no_grad():
+        with torch.no_grad():#
+            num_batch += 1
             input_ids = batch['input_ids'].to(device)
             attention_mask = batch['attention_mask'].to(device)
             if FLAG_VICUNA_DATA_ONLY:
@@ -250,6 +252,7 @@ def eval_classification(model, dataloader, device):
         f1_metric.compute(references=labels, predictions=predictions, average='macro') | \
         precision_metric.compute(references=labels, predictions=predictions, average='macro') | \
         recall_metric.compute(references=labels, predictions=predictions, average='macro')
+    print(f"num_batch: {num_batch}")
     return metric
 
 
@@ -372,7 +375,9 @@ def predict(model, dataloader, device):
                 else:
                     print_model_names.append(model_names[model_ids[sample_i]])
 
-    if FLAG_FIRST_ROUND_ONLY:
+    if FLAG_FIRST_ROUND_ONLY:#
+        # TODO are these latencies predictor model latencies or the real model latencies?
+        # Seems to be the predictor latencies
         df = pd.DataFrame({'actual_length': actual_lengths, 'predicted_label': predicted_labels, 'latency': latencies, 'model_name': print_model_names})
     else:
         df = pd.DataFrame({'actual_length': actual_lengths, 'predicted_label': predicted_labels, 'latency': latencies, 'turn_id': turn_ids, 'model_name': print_model_names})
@@ -493,7 +498,7 @@ if __name__ == '__main__':
     config = AutoConfig.from_pretrained(model_name)
     if TASK_TYPE == 1 or TASK_TYPE == 2:
         print('Cross entropy weights: ')
-        print(weights)
+        print(weights) # NOTE these are added for alleviating the imbalance in the dataset
 
     # regression or ordinal classification
     if TASK_TYPE == 0 or TASK_TYPE == 3 or TASK_TYPE == 4:
@@ -510,18 +515,18 @@ if __name__ == '__main__':
     optimizer = torch.optim.AdamW(params=model.parameters(), lr=lr)
 
     if FLAG_LOAD_MODEL_WEIGHTS:
-        model.load_state_dict(torch.load('./models/' + output_filename.split('.')[0] + '.pth'))
+        model.load_state_dict(torch.load(f'{os.path.dirname(os.path.abspath(__file__))}/models/' + output_filename.split('.')[0] + '.pth'))
         model.to(device)
         print("Loaded model weights from disk.")
     else:
         # Training
         print("Start training...")
-        train(model, 
-            criterion, 
-            optimizer, 
-            train_dataloader, 
-            validation_dataloader, 
-            num_epochs, 
+        train(model,
+            criterion,
+            optimizer,
+            train_dataloader,
+            validation_dataloader,
+            num_epochs,
             device)
 
     if TASK_TYPE == 0:

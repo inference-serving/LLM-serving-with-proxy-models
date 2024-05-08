@@ -130,9 +130,10 @@ def create_jobs(num_jobs, arrival_rate=1, std=1, coefficient_of_variance=3, dist
 
 
 def create_jobs_from_llm_data(num_jobs, arrival_rate=1, std=1, coefficient_of_variance=3, distribution='poisson',
-                              model='vicuna-13b', per_token_latency=0.02, const_latency=0.1,
+                              model='vicuna-13b', per_token_latency=0.02, const_latency=0.1, # TODO what is the logic behind per token latency?
                               data_path='../characterization/token_lengths_10000.csv', return_dict=False,
                               per_round_eval=PER_ROUND_EVAL, turn_id=TURN_ID):
+    # TODO where is the prediction overhead latencies?
     """
     This method creates a series of jobs based on the specified average arrival rate, standard deviation, and the
     distribution for simulating the job arrival process.

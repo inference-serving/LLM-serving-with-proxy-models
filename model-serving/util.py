@@ -42,7 +42,7 @@ NUM_JOBS = 50
 # CLASSIFIERS = ['head-tail', 'tail-only']
 
 # LLM_DATA_PATH = 'prediction/final/predictions_all.csv'  # multiple predictors new cleaned dataset
-LLM_DATA_PATH = 'prediction/final/predictions_multiround_all.csv'  # multiple predictors new cleaned dataset (multi-round)
+LLM_DATA_PATH = f'{os.path.dirname(os.path.abspath(__file__))}/prediction/final/predictions_multiround_all.csv'  # multiple predictors new cleaned dataset (multi-round)
 CLASSIFIERS = ['reg-l1', 'reg-mse', 'cls', 'multi-cls', 'multi-cls-l1', 'multi-cls-mse']
 
 # RESULTS_DIR = 'results/scheduling-algo-barplots/'  # 'results/multi-round/'
