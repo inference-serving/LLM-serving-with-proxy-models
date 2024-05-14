@@ -1,0 +1,9 @@
+{
+	"folders": [
+		{
+			"name": "LLM-serving-with-proxy-models",
+			"path": "../../.."
+		}
+	],
+	"settings": {}
+}

@@ -163,6 +163,7 @@ def preprocess_dataset(dataset):
     dataset = dataset.add_column('prompt', new_sentence_column)
     new_label_column = [0] * len(dataset)
     dataset = dataset.add_column('labels', new_label_column)
+    # TODO AUTHORS, HERE
     if task_type != 0:
         new_length_column = [0] * len(dataset)
         dataset = dataset.add_column('num_tokens', new_length_column)
