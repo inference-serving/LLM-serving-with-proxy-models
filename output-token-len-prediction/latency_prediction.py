@@ -358,7 +358,9 @@ def predict(model, dataloader, device):
                 model_name = batch['model'].to(device)
                 predictions = model(input_ids=input_ids, attention_mask=attention_mask, model_name=model_name)
             if TASK_TYPE == 0 or TASK_TYPE == 3 or TASK_TYPE == 4:
-                lengths = batch['num_tokens']
+                # lengths = batch['num_tokens']
+                # TODO HERE AUTHORS
+                lengths = batch['labels']
                 predictions = predictions
             else:
                 predictions = torch.argmax(predictions, dim=-1)
@@ -453,7 +455,7 @@ if __name__ == '__main__':
     FLAG_FIRST_ROUND_ONLY = not args.multi_round
     FALG_HEAD_TAIL = args.head_tail
 
-    FLAG_LOAD_MODEL_WEIGHTS = False
+    FLAG_LOAD_MODEL_WEIGHTS = True
     FLAG_SAVE_MODEL_WEIGHTS = True
     if FLAG_LOAD_MODEL_WEIGHTS:
         FLAG_SAVE_MODEL_WEIGHTS = False
